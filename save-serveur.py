@@ -66,7 +66,7 @@ if len(lines)>0:
 
 #** Sauvegarde de la liste des paquets *****************************************
 if dpkg:
-    cde="dpkg --get-selections > /root/MesDocuments/dpkg--get-selections.txt"
+    cde="dpkg --get-selections > /root/dpkg--get-selections.txt"
     lines=os.popen(cde).readlines()
 #*******************************************************************************
 
