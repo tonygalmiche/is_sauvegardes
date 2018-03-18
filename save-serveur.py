@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
 import os
@@ -15,7 +15,7 @@ import psycopg2.extras
 
 
 def sortie(resultat):
-    print resultat
+    #print resultat
     print u'\n'.join(resultat)
     exit()
 
@@ -74,7 +74,7 @@ if dpkg:
 #** Sauvegarde *****************************************************************
 mk1=int(time.time())
 now = datetime.now(pytz.timezone('Europe/Paris')).strftime('%H:%M:%S')
-resultat.append(now+u" : Début de la sauvegarde sur '"+seagate+"' ***********************")
+resultat.append(now+u" : Debut de la sauvegarde sur '"+seagate+"' ***********************")
 for s in sauvegardes:
     dossier   = s[0]
     name      = s[1]
