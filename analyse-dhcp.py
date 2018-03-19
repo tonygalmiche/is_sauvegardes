@@ -7,6 +7,7 @@ import time
 import pytz
 import psycopg2
 import psycopg2.extras
+from fonctions import *
 
 
 #** Lecture des paramètres *****************************************************
@@ -35,16 +36,8 @@ odoo_glpi = p.get('odoo_glpi')
 
 
 #** Connexion à odoo-glpi ******************************************************
-if postgres and odoo_glpi:
-    cnx=False
-    try:
-        cnx = psycopg2.connect("dbname='"+postgres['dbname']+"' user='"+postgres['user']+"' host='"+postgres['host']+"' password='"+postgres['password']+"'")
-    except Exception, e:
-        resultat.append(u'ERREUR : Postgresql non disponible')
-        sortie(resultat)
-    cr = cnx.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+cnx,cr=connect2postgres(postgres)
 #*******************************************************************************
-
 
 
 lines = open('/var/lib/dhcp/dhcpd.leases', 'r') 
