@@ -45,12 +45,14 @@ if 'parametres' not in globals():
     sortie(resultat)
 p=parametres
 sauvegardes         = p.get('sauvegardes')
+sauvegarde_locale   = p.get('sauvegarde_locale')
 serveur             = p.get('serveur')
 serveur_login       = p.get('serveur_login')
 dossier_destination = p.get('dossier_destination')
 dpkg                = p.get('dpkg')
 postgres            = p.get('postgres')
 odoo_glpi           = p.get('odoo_glpi')
+
 #*******************************************************************************
 
 
@@ -84,13 +86,19 @@ for s in sauvegardes:
         J=datetime.now().weekday()+1
     if jour=='day':
         J=datetime.now().day
-    dest="/Sauvegardes/"+name
+    #dest="/Sauvegardes/"+name
+    dest=name
     if J:
         dest=dest+"-"+str(J)
     dest=dest+".tgz"
 
     #** Sauvegarde *************************************************************
-    cde="tar -czf "+dest+" "+dossier+" 2>&1 | grep -v Suppression | grep -v socket"
+    if sauvegarde_locale:
+        dest=sauvegarde_locale+'/'+dest
+        cde="tar -czf "+dest+" "+dossier+" 2>&1 | grep -v Suppression | grep -v socket"
+    else:
+        dest=dossier_destination+serveur+'/'+dest
+        cde="tar -czf - "+dossier+" 2>/dev/null | ssh "+serveur_login+"@"+seagate+' "cat > '+dest+'"' 
     lines=os.popen(cde).readlines()
     err1=''
     if len(lines)>0:
@@ -101,12 +109,13 @@ for s in sauvegardes:
 
 
     #** Copie sur le seagate ***************************************************
-    cde="scp "+dest+" "+serveur_login+"@"+seagate+":"+dossier_destination+serveur+"/ 2>&1"
-    lines=os.popen(cde).readlines()
     err2=''
-    if len(lines)>0:
-        nb_anomalies=nb_anomalies+1
-        err2=u', '.join(lines)
+    if sauvegarde_locale:
+        cde="scp "+dest+" "+serveur_login+"@"+seagate+":"+dossier_destination+serveur+"/ 2>&1"
+        lines=os.popen(cde).readlines()
+        if len(lines)>0:
+            nb_anomalies=nb_anomalies+1
+            err2=u', '.join(lines)
     now = datetime.now(pytz.timezone('Europe/Paris')).strftime('%H:%M:%S')
     resultat.append(now+u" : - sauvegarde de '"+dossier+u"' dans '"+dest+u' '+err1+u' '+err2)
     #***************************************************************************
